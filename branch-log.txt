@@ -1,0 +1,11 @@
+Tagging mezzanine 2.15.0
+Tagging mezzanine 3.1.0
+Tagging mezzanine 3.3.1
+Tagging mezzanine 3.4
+Tagging mezzanine 3.5
+Tagging mezzanine 3.6
+Tagging mezzanine 3.7
+Tagging mezzanine 3.8
+Tagging mezzanine 3.9
+Tagging mezzanine 3.10
+Tagging mezzanine 3.11
