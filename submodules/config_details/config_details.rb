@@ -14,9 +14,15 @@ module Config
     include gen_submodule_render(template_dir)
 
     CONFIG_PATH = '/var/ob/calibration_directory_and_file.txt'
-    CONFIG_FILE_LOCATIONS = Pathname.new('var', 'ob', 'configs')
+
+    magic_file = File.read(CONFIG_PATH).strip
+    ConfigActions::set_magic_activation_file(magic_file)
+
+    CONFIG_FILE_LOCATIONS = Pathname.new('/', 'var', 'ob', 'configs')
 
     def self.registered(app)
+      ConfigActions::ensure_upload_dir(CONFIG_FILE_LOCATIONS)
+
       app.helpers ConfigDetails::Helpers
 
       app.get '/configs' do

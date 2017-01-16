@@ -1,6 +1,5 @@
 module ConfigActions
-  CONFIG_FILENAME = 'user.bin'.freeze
-  CONFIG_DIRECTORY = '/tmp/configs'
+  @@filename = 'user.bin' # This should be changed by the #set_magic_activation_file method
 
   # Make the selected file the `user.bin` file used by Mezzanine.
   # Copies the file to the special `user.bin` filename
@@ -8,7 +7,7 @@ module ConfigActions
   # @param config_file [Pathname] the location of the file to copy
   # @return [Pathname] The destination file (equal to CONFIG_FILENAME)
   def enable_config(config_file)
-    `cp #{config_file.to_s} #{CONFIG_FILENAME} `
+    `cp -f #{config_file.to_s} #{@@filename} `
   end
 
   # Get the config files uploaded to the supplied directory
@@ -16,24 +15,7 @@ module ConfigActions
   # @param directory [String|Pathname] The directory to list files in
   # @return [Array[String]] The files in that directory
   def list_configs(directory)
-    ensure_upload_dir!
-    Dir.entries(directory).reject { |fn| fn ~= /\./ }
-  end
-
-  # Save a file in the given location
-  #
-  # @param file_data [IOData] The file data to write
-  # @param location [Pathname] Where to upload the file to
-  # @return [true]
-  def upload_config(file_data, location)
-    ensure_upload_dir!
-    File.open("./public/#{location}", 'wb') do |f|
-      f.write(file_data.read)
-    end
-  end
-
-
-  def download_config(file)
+    Dir.entries(directory).reject { |fn| fn ~= /^\./ }
   end
 
   # Delete the given config file. Raises an error if the file doesn't exist
@@ -41,14 +23,19 @@ module ConfigActions
   # @param file [Pathname] The file to delete
   # @return [true]
   def delete_config(file)
-
+    # TODO
   end
 
   # ????
   def save_current_config(config)
+    # TODO
   end
 
-  def ensure_upload_dir!
-    `mkdir -p #{CONFIG_DIRECTORY}`
+  def ensure_upload_dir!(dir)
+    `mkdir -p #{dir}` unless File.directory? dir
+  end
+
+  def set_magic_activation_file(filename)
+    @@filename = filename
   end
 end
