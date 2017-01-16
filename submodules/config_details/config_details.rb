@@ -17,8 +17,9 @@ module Config
 
     magic_file = File.read(CONFIG_PATH).strip
     ConfigActions::set_magic_activation_file(magic_file)
+    ConfigAction::set_active_filename('active')
 
-    CONFIG_FILE_LOCATIONS = Pathname.new('/', 'var', 'ob', 'configs')
+    CONFIG_FILE_LOCATIONS = Pathname.new('/var/ob/configs')
 
     def self.registered(app)
       ConfigActions::ensure_upload_dir(CONFIG_FILE_LOCATIONS)
@@ -48,9 +49,15 @@ module Config
         end
       end
 
+      app.post '/configs/save_as_active' do
+        filename = params['filename'].gsub(/\s/, '-').gsub('.', '-')
+        ConfigActions::save_current_config(CONFIG_FILE_LOCATIONS.join(filename))
+        redirect '/configs'
+      end
+
       app.post '/configs/upload' do
+        filename = params['filename'].gsub(/\s/, '-').gsub('.', '-')
         tempfile = params['file'][:tempfile]
-        filename = params['file'][:filename]
         File.copy(tempfile.path, CONFIG_FILE_LOCATIONS.join(filename))
         redirect '/configs'
       end

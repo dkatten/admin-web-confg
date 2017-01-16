@@ -1,6 +1,7 @@
 <link rel="stylesheet" type="text/css" href="config/config_details/config.css">
 
 <h4>Oblong Configrations</h4>
+
 <% if success.present? %>
   <div class="success"><%= success -%></div>
 <% end %>
@@ -19,8 +20,16 @@
   <% end %>
 </ul>
 
+<form id="save_current" action="save_as_active">
+  <label for="filename">Name for Current Configuration</label>
+  <input type="text" name="filename" id="filename"/>
+  <input type="submit" id="submit_form">Save</input>
+</form>
+
+<h5>Upload a calibration</h5>
 <form id="upload" action="upload">
-  <label for="file">File to Upload</label>
-  <input type="file" name="file" id="file"/>
-  <input type="submit" id="submit_form" />
+  <label for="filename">Name for Configuration</label>
+  <input type="text" name="filename" id="filename"/>
+  <input type="file" name="file" id="file" />
+  <input type="submit" id="submit_form">Upload</input>
 </form>
