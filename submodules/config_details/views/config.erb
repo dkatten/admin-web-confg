@@ -1,64 +1,25 @@
 <link rel="stylesheet" type="text/css" href="config/config_details/config.css">
 
-<% unless current_certificate.nil? %>
-<div class="section">
-  <% unless error_string.nil? %>
-  <p>
-    <b>Error</b><br>
-    <% if ! error_string.index("certificate has expired").nil? %>
-      The certificate has expired.
-    <% else %>
-      <%= error_string %>
-    <% end %>
-    <br>
-  </p>
-  <% end %>
-  <b>Issued To</b>
-  <table>
-    <tr>
-      <td>Common Name <small>(CN)</small></td>
-      <td><%= current_certificate['subject_common_name'] %></td>
-    </tr><tr>
-      <td>Organization <small>(O)</small></td>
-      <td><%= current_certificate['subject_organization'] %></td>
-    </tr><tr>
-      <td>Organizational Unit <small>(OU)</small></td>
-      <td><%= current_certificate['subject_organizational_unit'] %> </td>
-    </tr><tr>
-      <td>Serial Number</td><td><%= current_certificate['serial_number'] %></td>
-    </tr>
-  </table>
-  <b>Issued By</b>
-  <table>
-    <tr>
-      <td>Common Name <small>(CN)</small></td>
-      <td><%= current_certificate['issuer_common_name'] %></td>
-    </tr><tr>
-      <td>Organization <small>(O)</small></td>
-      <td><%= current_certificate['issuer_organization'] %></td>
-    </tr><tr>
-      <td>Organizational Unit <small>(OU)</small></td>
-      <td><%= current_certificate['issuer_organizational_unit'] %></td>
-    </tr>
-  </table>
-  <b>Validity</b>
-  <table>
-    <tr>
-      <td>Issued On</td>
-      <td><%= current_certificate['start_date'] %></td>
-    </tr><tr>
-      <td>Expires On</td>
-      <td><%= current_certificate['end_date'] %></td>
-    </tr>
-  </table>
-  <b>Fingerprint</b>
-  <table>
-    <tr>
-      <td>SHA1 fingerprint</td>
-      <td><%= current_certificate['fingerprint'] %></td>
-    </tr>
-  </table>
-</div>
+<h4>Oblong Configrations</h4>
+<% if success.present? %>
+  <div class="success"><%= success -%></div>
 <% end %>
 
-<a href="<%= url "/certificate?page=update_certificate&type=oblong" %>" class='btn'>Use a new Oblong certificate</a> <br><br>
+<% if error.present? %>
+  <div class="error"><%= error -%></div>
+<% end %>
+<ul>
+  <% configs.each do |config| %>
+    <li>
+      <%= config -%>
+      <a class="activate" href="./activate/<%= config -%>">Activate</a>
+      <a class="dl" href="./donwload/<%= config -%>">Download</a>
+    </li>
+  <% end %>
+</ul>
+
+<form id="upload" action="upload">
+  <label for="file">File to Upload</label>
+  <input type="file" name="file" id="file"/>
+  <input type="submit" id="submit_form" />
+</form>
