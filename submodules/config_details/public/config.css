@@ -9,3 +9,8 @@
   background-color: #caa;
   padding: 10px;
 }
+
+
+tr:hover {
+  background-color: #eaeaea;
+}

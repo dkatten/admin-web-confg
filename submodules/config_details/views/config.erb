@@ -2,34 +2,53 @@
 
 <h4>Oblong Configrations</h4>
 
-<% if success.present? %>
+<% if defined?(success) && !success.nil? %>
   <div class="success"><%= success -%></div>
 <% end %>
 
-<% if error.present? %>
-  <div class="error"><%= error -%></div>
-<% end %>
 
-<ul>
+<table width="50%">
   <% configs.each do |config| %>
-    <li>
-      <%= config -%>
-      <a class="activate" href="./activate/<%= config -%>">Activate</a>
-      <a class="dl" href="./donwload/<%= config -%>">Download</a>
-    </li>
+    <tr>
+      <td><%= config -%></td>
+      <td><a class="activate" href="./configs/activate/<%= config -%>">Activate</a></td>
+      <td><a class="dl" href="./configs/download/<%= config -%>">Download</a></td>
+      <td><a class="delete" href="./configs/delete/<%=config -%>">Delete</a></td>
+    </tr>
   <% end %>
-</ul>
+</table>
 
-<form id="save_current" action="save_as_active">
-  <label for="filename">Name for Current Configuration</label>
+<h5>Save Current Calibration</h5>
+<form id="save_current" action="./configs/save_as_active" method="POST">
+  <label for="filename">Configuation Name</label>
   <input type="text" name="filename" id="filename"/>
-  <input type="submit" id="submit_form">Save</input>
+  <br/>
+  <input type="submit" id="submit_form" value="Save"/>
 </form>
 
 <h5>Upload a calibration</h5>
-<form id="upload" action="upload">
+<form id="upload" action="./configs/upload" method="POST">
   <label for="filename">Name for Configuration</label>
   <input type="text" name="filename" id="filename"/>
+  <br/>
   <input type="file" name="file" id="file" />
-  <input type="submit" id="submit_form">Upload</input>
+  <br/>
+  <input type="submit" id="upload_form" value="Upload" />
 </form>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.activate').click(function() {
+
+    });
+    $('.delete').click(function() {
+
+    });
+    $('#save_form').click(function() {
+
+    });
+    $('#upload_form').click(function() {
+
+    });
+  });
+</script>
