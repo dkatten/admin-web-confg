@@ -6,49 +6,64 @@
   <div class="success"><%= success -%></div>
 <% end %>
 
-
 <table width="50%">
   <% configs.each do |config| %>
     <tr>
-      <td><%= config -%></td>
-      <td><a class="activate" href="./configs/activate/<%= config -%>">Activate</a></td>
-      <td><a class="dl" href="./configs/download/<%= config -%>">Download</a></td>
-      <td><a class="delete" href="./configs/delete/<%=config -%>">Delete</a></td>
+      <td>
+        <% if config == active %>
+          <b><%= config -%></b>
+        <% else %>
+          <%= config -%>
+        <% end %>
+      </td>
+      <td>
+        <form method="POST" action="./configs/activate/<%= config -%>">
+          <input type="submit" value="Enable"/>
+        </form>
+      </td>
+      <td>
+        <form method="GET" action="./configs/download/<%= config -%>">
+          <input type="submit" value="Download"/>
+        </form>
+      </td>
+      <td>
+        <form method="POST" action="./configs/delete/<%= config -%>" onsubmit="return confirm('Are you sure you want to delete this config?')">
+          <input type="submit" value="Delete"/>
+        </form>
+      </td>
     </tr>
   <% end %>
 </table>
 
 <h5>Save Current Calibration</h5>
 <form id="save_current" action="./configs/save_as_active" method="POST">
-  <label for="filename">Configuation Name</label>
-  <input type="text" name="filename" id="filename"/>
-  <br/>
-  <input type="submit" id="submit_form" value="Save"/>
+  <input type="hidden" name="filename" id="filename"/>
+
+  <input type="button" onclick= "get_config_name('filename', 'save_current')" id="submit_form" value="Save"/>
 </form>
 
 <h5>Upload a calibration</h5>
 <form id="upload" action="./configs/upload" method="POST">
-  <label for="filename">Name for Configuration</label>
-  <input type="text" name="filename" id="filename"/>
+  <input type="file" name="file" id="file" onchange="checkFileSize(this)"/>
   <br/>
-  <input type="file" name="file" id="file" />
-  <br/>
-  <input type="submit" id="upload_form" value="Upload" />
+  <input type="button" onclick="get_config_name('ul_filename', 'upload')" id="upload_form" value="Upload" disabled />
 </form>
 
 <script type="text/javascript">
-  $(document).ready(function(){
-    $('.activate').click(function() {
 
-    });
-    $('.delete').click(function() {
-
-    });
-    $('#save_form').click(function() {
-
-    });
-    $('#upload_form').click(function() {
-
-    });
-  });
+window.checkFileSize = function(input) {
+  console.log(input.files[0].size)
+  if (input.files && input.files[0] && input.files[0].size > 100*1024) {
+    alert("This file is too large. Files must be < 100k");
+    document.getElementById('upload_form').disabled = true;
+  } else {
+    document.getElementById('upload_form').disabled = false;
+  }
+}
+window.get_config_name = function(filenameId, formId) {
+  var name = window.prompt("Enter name for configuration");
+  var input = document.getElementById(filenameId);
+  input.value = name;
+  document.getElementById(formId).submit();
+}
 </script>

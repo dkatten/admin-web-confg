@@ -7,7 +7,7 @@ module ConfigActions
   # @param config_file [Pathname] the location of the file to copy
   # @return [Pathname] The destination file (equal to CONFIG_FILENAME)
   def enable_config(config_file)
-    `cp -f #{config_file.to_s} #{@@magic_filename} `
+    FileUtils.cp config_file.to_s, @@magic_filename, force: true
   end
 
   # Get the config files uploaded to the supplied directory
@@ -25,21 +25,21 @@ module ConfigActions
   # @return [true]
   def delete_config(file)
     if File.exists? file
-      `rm -f #{file}`
+      FileUtils.rm file
     end
   end
   module_function :delete_config
 
   # Saves the current magic file with the given name
-  def save_current_config(as_filename)
-    `cp -f #{@@magic_filename} #{as_filename}`
+  def save_current_config(filename)
+    FileUtils.cp @@magic_filename, filename
   end
   module_function :save_current_config
 
   def activate_profile(filename)
     if Pathname.new(filename).exist?
       ConfigActions::set_active_config(filename)
-      `cp -f #{filename} #{@@magic_filename}`
+      FileUtils.cp filename, @@magic_filename
     else
       raise "NOPE"
     end
@@ -47,7 +47,7 @@ module ConfigActions
   module_function :activate_profile
 
   def ensure_upload_dir!(dir)
-    `mkdir -p #{dir}` unless File.directory? dir
+    FileUtils.mkdir_p dir
   end
   module_function :ensure_upload_dir!
 
@@ -77,6 +77,7 @@ module ConfigActions
   def current_active_config
     File.read(@@active).strip
   end
+  module_function :current_active_config
 
   def able_to_activate_profile?
   end

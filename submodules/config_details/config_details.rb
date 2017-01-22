@@ -25,25 +25,53 @@ module Config
     ConfigActions::set_active_filename(CALIBRATION_DIRECTORY.join('.active'))
 
     def self.registered(app)
+
+      app.helpers do
+        def file_exists?(filename)
+          File.exist? filename
+        end
+      end
+
       ConfigActions::ensure_upload_dir!(CALIBRATION_DIRECTORY)
 
       app.get '/configs' do
+        active_file = File.basename(ConfigActions::current_active_config || "")
         ConfigDetails::render(method(:erb), 'config.erb', {
-          configs: ConfigActions::list_configs(CALIBRATION_DIRECTORY) || []
+          configs: ConfigActions::list_configs(CALIBRATION_DIRECTORY) || [],
+          active: active_file
         })
       end
 
-      app.get '/configs/activate/:filename' do
+      app.post '/configs/activate/:filename' do
         fn = params[:filename].gsub('..', '')
         full_filename = CALIBRATION_DIRECTORY.join(fn)
-        ConfigActions::activate_profile(full_filename)
-        redirect '/configs'
+        if file_exists? full_filename
+          ConfigActions::activate_profile(full_filename)
+          redirect '/configs'
+        else
+          redirect '/configs?e=Unable to enable profile'
+        end
+      end
+
+      app.post '/configs/delete/:filename' do
+        fn = params[:filename].gsub('..', '')
+        full_filename = CALIBRATION_DIRECTORY.join(fn)
+        if file_exists? full_filename
+          ConfigActions::delete_config(full_filename)
+          redirect '/configs'
+        else
+          redirect '/configs?e=Unable to delete profile'
+        end
       end
 
       app.post '/configs/save_as_active' do
         filename = params['filename'].gsub(/\s/, '-').gsub('.', '-')
-        ConfigActions::save_current_config(CALIBRATION_DIRECTORY.join(filename))
-        redirect '/configs'
+        if !file_exists? CALIBRATION_DIRECTORY.join(filename)
+          ConfigActions::save_current_config(CALIBRATION_DIRECTORY.join(filename))
+          redirect '/configs'
+        else
+          redirect '/configs?e=Unable to save profile with that name as it already exists'
+        end
       end
 
       app.post '/configs/upload' do
