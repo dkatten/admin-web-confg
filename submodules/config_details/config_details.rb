@@ -30,6 +30,9 @@ module Config
         def file_exists?(filename)
           File.exist? filename
         end
+        def file_is_active?(filename)
+          File.basename(ConfigActions::current_active_config || "") == filename
+        end
       end
 
       ConfigActions::ensure_upload_dir!(CALIBRATION_DIRECTORY)
@@ -57,8 +60,12 @@ module Config
 
       app.post '/configs/delete/:filename' do
         fn = params[:filename].gsub('..', '')
+        en = (params[:enable] || '').gsub('..', '')
         full_filename = CALIBRATION_DIRECTORY.join(fn)
         if file_exists? full_filename
+          if file_is_active?(fn) && params[:enable] && file_exists?(CALIBRATION_DIRECTORY.join(en))
+             ConfigActions::activate_profile(CALIBRATION_DIRECTORY.join(en))
+          end
           ConfigActions::delete_config(full_filename)
           redirect '/configs'
         else
@@ -93,19 +100,6 @@ module Config
             configs: ConfigActions::list_configs(CALIBRATION_DIRECTORY),
             error: "Unable to find config"
           })
-        end
-      end
-
-      app.post '/configs/validate' do
-        fn = params[:filename].gsub('..', '')
-
-        case params[:action]
-        when 'activate'
-          ConfigActions::able_to_save_file? fn, CALIBRATION_DIRECTORY
-        when 'upload'
-          ConfigActions::able_to_save_file? fn, CALIBRATION_DIRECTORY
-        when 'save'
-          ConfigActions::able_to_save_file? fn, CALIBRATION_DIRECTORY
         end
       end
     end

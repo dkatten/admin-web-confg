@@ -1,5 +1,12 @@
 <link rel="stylesheet" type="text/css" href="config/config_details/config.css">
 
+<script type="text/javascript">
+  window.adminWebConfigFiles = {};
+  <% configs.each do |config| %>
+    window.adminWebConfigFiles['<%= config %>'] = <%= config == active %>;
+  <% end %>
+</script>
+
 <h4>Oblong Configrations</h4>
 
 <% if defined?(msg) && !msg.nil?  && msg != '' %>
@@ -27,8 +34,18 @@
         </form>
       </td>
       <td>
-        <form method="POST" action="./configs/delete/<%= config -%>" onsubmit="return confirm('Are you sure you want to delete this config?')">
+        <form method="POST" action="./configs/delete/<%= config -%>" onsubmit="return delete_confirmation('<%= config %>')">
           <input type="submit" value="Delete"/>
+          <div class="hidden" id="<%= config %>-enable">
+            <span>and enable</span>
+            <select id="<%= config %>-select" name="enable">
+              <% configs.each do |other| %>
+                <% if other != config %>
+                  <option value="<%= other %>"><%= other %></option>
+                <% end %>
+              <% end %>
+            </select>
+          </div>
         </form>
       </td>
     </tr>
@@ -59,11 +76,32 @@ window.checkFileSize = function(input) {
   } else {
     document.getElementById('upload_form').disabled = false;
   }
-}
+};
+
 window.get_config_name = function(filenameId, formId) {
   var name = window.prompt("Enter name for configuration");
   var input = document.getElementById(filenameId);
   input.value = name;
-  document.getElementById(formId).submit();
+  if (adminWebConfigFiles[name]) {
+    if (confirm("This would overwrite an existing config. Are you sure?")) {
+      document.getElementById(formId).submit();
+    }
+  } else {
+    document.getElementById(formId).submit();
+  }
+};
+
+window.delete_confirmation = function(config) {
+  if (adminWebConfigFiles[config]) {
+    if (document.getElementById(config + '-select').selectedIndex) {
+      return confirm("Are you sure you want to delete this configuration?")
+    } else {
+      document.getElementById(config + '-enable').className = ''; // Show the other configs to choose from
+      return false;
+    }
+  } else {
+    return confirm("Are you sure you want to delete this configuration?")
+  }
 }
+
 </script>
