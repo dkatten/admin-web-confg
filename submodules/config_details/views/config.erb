@@ -2,8 +2,8 @@
 
 <h4>Oblong Configrations</h4>
 
-<% if defined?(success) && !success.nil? %>
-  <div class="success"><%= success -%></div>
+<% if defined?(msg) && !msg.nil?  && msg != '' %>
+  <div class="error"><%= msg -%></div>
 <% end %>
 
 <table width="50%">

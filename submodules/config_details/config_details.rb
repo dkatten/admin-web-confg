@@ -36,9 +36,11 @@ module Config
 
       app.get '/configs' do
         active_file = File.basename(ConfigActions::current_active_config || "")
+        error = params[:e]
         ConfigDetails::render(method(:erb), 'config.erb', {
           configs: ConfigActions::list_configs(CALIBRATION_DIRECTORY) || [],
-          active: active_file
+          active: active_file,
+          msg: error
         })
       end
 
